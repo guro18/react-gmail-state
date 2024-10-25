@@ -1,15 +1,35 @@
-import { useState } from 'react'
-
+/* eslint-disable no-unused-vars */
+import { useState, useEffect } from 'react'
 import Header from './components/Header'
 import initialEmails from './data/emails'
-
 import './styles/App.css'
+
+
 
 
 function App() {
   // Use initialEmails for state
   const [emails, setEmails] = useState(initialEmails)
-  console.log(initialEmails)
+
+  useEffect(() => {
+    console.log('Emails: ', emails);
+  }, [emails]);
+
+  const toggleRead = (emailId) => {
+    setEmails((prevEmails) =>
+      prevEmails.map((email) =>
+        email.id === emailId ? { ...email, read: !email.read } : email
+      )
+    );
+  };
+
+  const toggleStar = (emailId) => {
+    setEmails((prevEmails) =>
+      prevEmails.map((email) =>
+        email.id === emailId ? {...email, starred: !email.starred } : email 
+      )
+    );
+  };
 
   return (
     <div className="app">
@@ -47,10 +67,20 @@ function App() {
           {emails.map(email => (
             <li key={email.id} className={`email ${email.read ? 'read' : 'unread'}`}>
               <div className="select">
-                <input className="select-checkbox" type="checkbox" />
+                <input 
+                  className="select-checkbox" 
+                  type="checkbox" 
+                  defaultChecked={email.read}
+                  onChange={() => toggleRead(email.id)}
+                />
               </div>
               <div className="star">
-                <input className="star-checkbox" type="checkbox" defaultChecked={email.starred} />
+                <input 
+                className="star-checkbox" 
+                type="checkbox" 
+                defaultChecked={email.starred}
+                onChange={() => toggleStar(email.id)}
+                />
               </div>
               <div className="sender">{email.sender}</div>
               <div className="title">{email.title}</div>
