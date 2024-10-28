@@ -8,10 +8,14 @@ function App() {
   const [emails, setEmails] = useState(initialEmails);
   const [allEmails, setAllEmails] = useState(initialEmails);
   const [hideReadChecked, setHideReadChecked] = useState(false);
+  const [inboxCount, setInboxCount] = useState(0);
+  const [starredCount, setStarredCount] = useState(0);
+  const [selectedTab, setSelectedTab] = useState("inbox");
 
   useEffect(() => {
-    console.log('Emails: ', emails);
-  }, [emails]);
+    setInboxCount(allEmails.length);
+    setStarredCount(allEmails.filter((email) => email.starred).length);
+  }, [allEmails]);
 
   const toggleRead = (emailId) => {
     setEmails((prevEmails) =>
@@ -50,28 +54,38 @@ function App() {
     });
   };
 
+  const handleInboxClick = () => {
+    setSelectedTab("inbox");
+    setEmails(allEmails); // Show all emails when Inbox is selected
+  };
+
+  const handleStarredClick = () => {
+    setSelectedTab("starred");
+    setEmails(allEmails.filter((email) => email.starred)); // Show only starred emails
+  };
+
   return (
     <div className="app">
       <Header />
       <nav className="left-menu">
         <ul className="inbox-list">
           <li
-            className="item active"
-            // onClick={() => {}}
+            className={selectedTab === "inbox" ? "item active" : "item"}
+            onClick={handleInboxClick}
           >
             <span className="label">Inbox</span>
-            <span className="count">?</span>
+            <span className="count">{inboxCount}</span>
           </li>
           <li
-            className="item"
-            // onClick={() => {}}
+            className={selectedTab === "starred" ? "item active" : "item"}
+            onClick={handleStarredClick}
           >
             <span className="label">Starred</span>
-            <span className="count">?</span>
+            <span className="count">{starredCount}</span>
           </li>
 
           <li className="item toggle">
-            <label htmlFor="hide-read">Hide read</label>
+            <label htmlFor="hide-read">Hide Read</label>
             <input
               id="hide-read"
               type="checkbox"
