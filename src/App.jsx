@@ -4,12 +4,10 @@ import Header from './components/Header'
 import initialEmails from './data/emails'
 import './styles/App.css'
 
-
-
-
 function App() {
-  // Use initialEmails for state
-  const [emails, setEmails] = useState(initialEmails)
+  const [emails, setEmails] = useState(initialEmails);
+  const [allEmails, setAllEmails] = useState(initialEmails);
+  const [hideReadChecked, setHideReadChecked] = useState(false);
 
   useEffect(() => {
     console.log('Emails: ', emails);
@@ -21,14 +19,35 @@ function App() {
         email.id === emailId ? { ...email, read: !email.read } : email
       )
     );
+
+    setAllEmails((prevEmails) =>
+      prevEmails.map((email) =>
+        email.id === emailId ? { ...email, read: !email.read } : email
+      )
+    );
   };
 
-  const toggleStar = (emailId) => {
+  const toggleStarred = (emailId) => {
     setEmails((prevEmails) =>
       prevEmails.map((email) =>
         email.id === emailId ? {...email, starred: !email.starred } : email 
       )
     );
+
+    setAllEmails((prevEmails) =>
+      prevEmails.map((email) =>
+        email.id === emailId ? { ...email, starred: !email.starred } : email
+      )
+    );
+  };
+
+  const handleHideReadChange = () => {
+    setHideReadChecked((prevChecked) => {
+      const newChecked = !prevChecked;
+      setEmails(newChecked ? allEmails.filter((email) => 
+        !email.read) : allEmails);
+      return newChecked;
+    });
   };
 
   return (
@@ -56,8 +75,8 @@ function App() {
             <input
               id="hide-read"
               type="checkbox"
-              checked={false}
-              // onChange={() => {}}
+              checked={hideReadChecked}
+              onChange={handleHideReadChange}
             />
           </li>
         </ul>
@@ -70,7 +89,7 @@ function App() {
                 <input 
                   className="select-checkbox" 
                   type="checkbox" 
-                  defaultChecked={email.read}
+                  checked={email.read}
                   onChange={() => toggleRead(email.id)}
                 />
               </div>
@@ -79,7 +98,7 @@ function App() {
                 className="star-checkbox" 
                 type="checkbox" 
                 defaultChecked={email.starred}
-                onChange={() => toggleStar(email.id)}
+                onChange={() => toggleStarred(email.id)}
                 />
               </div>
               <div className="sender">{email.sender}</div>
